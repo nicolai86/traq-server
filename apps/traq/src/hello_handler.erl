@@ -9,9 +9,10 @@ init({_Any, http}, Req, []) ->
     {ok, Req, []}.
 
 handle(Req, State) ->
+    Payload = jsx:encode([{<<"Hello">>,<<"World">>}]),
     {ok, Req2} = cowboy_req:reply(200,
         [{<<"content-type">>, <<"text/plain">>}],
-        <<"Hello Erlang!">>,
+        Payload,
         Req),
     {ok, Req2, State}.
 
