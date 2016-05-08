@@ -1,9 +1,12 @@
-traq
-=====
+# traq
 
 An OTP application
 
-Build
------
+# Build
 
     $ rebar3 compile
+
+# Development
+
+    $ rebar3 shell
+    > sync:go().
