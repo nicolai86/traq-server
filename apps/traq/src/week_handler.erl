@@ -1,4 +1,4 @@
--module(hello_handler).
+-module(week_handler).
 -export([init/3, handle/2, terminate/2]).
 
 %% ===================================================================
@@ -9,9 +9,15 @@ init({_Any, http}, Req, []) ->
     {ok, Req, []}.
 
 handle(Req, State) ->
-    Payload = jsx:encode([{<<"Hello">>,<<"World">>}]),
+    {WeekNum, _} = cowboy_req:binding(week, Req),
+    Payload = jsx:encode([
+        {<<"week">>, WeekNum},
+        {<<"entries">>, []}
+    ]),
     {ok, Req2} = cowboy_req:reply(200,
-        [{<<"content-type">>, <<"text/plain">>}],
+        [
+          {<<"content-type">>, <<"application/json">>}
+        ],
         Payload,
         Req),
     {ok, Req2, State}.
