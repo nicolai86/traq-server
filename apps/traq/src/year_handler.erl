@@ -11,7 +11,7 @@ init({_Any, http}, Req, []) ->
 handle(Req, State) ->
     {Year, _} = cowboy_req:binding(year, Req),
     Payload = jsx:encode([
-        {<<"year">>, Year},
+        {<<"date">>, list_to_bitstring(integer_to_list(Year))},
         {<<"entries">>, []}
     ]),
     {ok, Req2} = cowboy_req:reply(200,

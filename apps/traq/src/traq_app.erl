@@ -21,16 +21,18 @@ start(_StartType, _StartArgs) ->
     Dispatch = cowboy_router:compile([
         {'_', [
             {"/", entrypoint_handler, []},
-            {"/date/:date", [{date, function, fun is_date/1}], date_handler, []},
-            {"/weeks/:week", [
-                    {week, int},
-                    {week, function, fun is_week/1}
-                ], week_handler, []},
-            {"/months/:month", [
+            {"/entries/:year", [{year, int}], year_handler, []},
+            {"/entries/:year/:month", [
+                    {year, int},
                     {month, int},
                     {month, function, fun is_month/1}
                 ], month_handler, []},
-            {"/years/:year", [{year, int}], year_handler, []}
+            {"/entries/:year/:month/:date", [
+                    {year, int},
+                    {month, int},
+                    {month, function, fun is_month/1},
+                    {date, int}
+                ], date_handler, []}
         ]}
     ]),
     cowboy:start_http(traq_listener, NumOfAcceptors, [{port, Port}],
@@ -38,7 +40,6 @@ start(_StartType, _StartArgs) ->
     ),
     traq_sup:start_link().
 
-%%--------------------------------------------------------------------
 stop(_State) ->
     ok.
 
@@ -49,12 +50,4 @@ stop(_State) ->
 is_month(Month) when Month < 13, Month > 0 -> true;
 is_month(_) -> false.
 
-is_week(WeekNum) when WeekNum > 0, WeekNum < 54 -> true;
-is_week(_) -> false.
 
-is_date(DateStr) ->
-    [YearStr, MonthStr, DayStr] = string:tokens(binary_to_list(DateStr), "-"),
-    {Year, _} = string:to_integer(YearStr),
-    {Month, _} = string:to_integer(MonthStr),
-    {Date, _} = string:to_integer(DayStr),
-    calendar:valid_date({Year, Month, Date}).

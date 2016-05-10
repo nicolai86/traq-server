@@ -9,9 +9,10 @@ init({_Any, http}, Req, []) ->
     {ok, Req, []}.
 
 handle(Req, State) ->
+    {Year, _} = cowboy_req:binding(year, Req),
     {Month, _} = cowboy_req:binding(month, Req),
     Payload = jsx:encode([
-        {<<"month">>, Month},
+        {<<"date">>, list_to_bitstring(io_lib:format("~4..0B-~2..0B", [Year, Month]))},
         {<<"entries">>, []}
     ]),
     {ok, Req2} = cowboy_req:reply(200,
