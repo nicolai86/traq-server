@@ -10,3 +10,7 @@ An OTP application
 
     $ rebar3 shell
     > sync:go().
+
+## Tests
+
+    $ rebar3 eunit

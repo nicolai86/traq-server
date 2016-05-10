@@ -10,6 +10,10 @@
 %% Application callbacks
 -export([start/2, stop/1]).
 
+-ifdef(TEST).
+-include_lib("eunit/include/eunit.hrl").
+-endif.
+
 %%====================================================================
 %% API
 %%====================================================================
@@ -50,4 +54,14 @@ stop(_State) ->
 is_month(Month) when Month < 13, Month > 0 -> true;
 is_month(_) -> false.
 
+-ifdef(TEST).
 
+is_month_jan_dec_test() ->
+    Months = lists:seq(1, 12, 1),
+    lists:foreach(fun(M) -> ?assert(is_month(M) =:= true) end, Months).
+
+invalid_is_month_test() ->
+    Exceptions = [0, 13, -2],
+    lists:foreach(fun(M) -> ?assertNot(is_month(M) =:= true) end, Exceptions).
+
+-endif.
