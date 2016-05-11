@@ -9,6 +9,7 @@
 
 %% Application callbacks
 -export([start/2, stop/1]).
+-export([init_dispatch/0]).
 
 -ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
@@ -18,11 +19,8 @@
 %% API
 %%====================================================================
 
-start(_StartType, _StartArgs) ->
-    Port = 8080,
-    NumOfAcceptors = 100,
-    io:format("Listening on ~p~n", [Port]),
-    Dispatch = cowboy_router:compile([
+init_dispatch() ->
+    cowboy_router:compile([
         {'_', [
             {"/", entrypoint_handler, []},
             {"/entries/:year", [{year, int}], year_handler, []},
@@ -38,7 +36,13 @@ start(_StartType, _StartArgs) ->
                     {date, int}
                 ], date_handler, []}
         ]}
-    ]),
+    ]).
+
+start(_StartType, _StartArgs) ->
+    Port = 8080,
+    NumOfAcceptors = 100,
+    io:format("Listening on ~p~n", [Port]),
+    Dispatch = init_dispatch(),
     cowboy:start_http(traq_listener, NumOfAcceptors, [{port, Port}],
         [{env, [{dispatch, Dispatch}]}]
     ),
