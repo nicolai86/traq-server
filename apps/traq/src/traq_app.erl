@@ -46,7 +46,8 @@ start(_StartType, _StartArgs) ->
     io:format("Listening on ~p~n", [Port]),
     DataDirectory = os:getenv("TRAQ_DATA_DIR"),
     Dispatch = init_dispatch(DataDirectory),
-    cowboy:start_http(traq_listener, NumOfAcceptors, [{port, Port}],
+    cowboy:start_http(traq_listener, NumOfAcceptors,
+        [{port, Port}],
         [{env, [{dispatch, Dispatch}]}]
     ),
     traq_sup:start_link().

@@ -1,5 +1,5 @@
 -module(entry_manager).
--export([entries/3, entries/4, entries/5]).
+-export([entries/3, entries/4, entries/5, append/6]).
 
 files(DataDirectory, Project, Year) ->
   Directory = io_lib:format("~s/~s/~p", [DataDirectory, Project, Year]),
@@ -8,6 +8,12 @@ files(DataDirectory, Project, Year) ->
     {error, _Reason} -> []
   end,
   {Directory, Files}.
+
+append(DataDirectory, Project, Year, Month, Date, Action) ->
+  file:make_dir(io_lib:format("~s/~s", [DataDirectory, Project])),
+  file:make_dir(io_lib:format("~s/~s/~p", [DataDirectory, Project, Year])),
+  DateFile = io_lib:format("~s/~s/~p/~p-~2..0B-~2..0B", [DataDirectory, Project, Year, Year, Month, Date]),
+  file:write_file(DateFile, io_lib:format("~s;~s;~n", [qdate:to_string("D F j H:i:s Y P"), Action]), [write, append]).
 
 content(DataDirectory, Files) ->
   Content = lists:map(fun(File) -> {ok, Lines} = file:read_file(DataDirectory ++ "/" ++ File), Lines end, Files),
